@@ -1,0 +1,68 @@
+source_file = "Day_8_input_final_set.txt"
+string_list = ""
+coordiantes_dict = {}
+curr_coordinates = {}
+curr_coordinates_cycles = {}
+
+line_number = 0
+with open(source_file, "r") as file:
+    for line in file:
+        if line_number == 0:
+            string_list = line.replace(" ", "").replace("\n", "")
+        elif line.find(" ") != -1:
+            coordiantes_dict[line[0:3]] = line[line.find("(") + 1:line.find(")")]
+            if line[2] == "A":
+                curr_coordinates[line[0:3]] = line[0:3]
+                curr_coordinates_cycles[line[0:3]] = 0
+        line_number += 1
+
+iteration_count = 0
+z_validation = 0
+
+while z_validation == 0:
+    for char in string_list:
+        iteration_count += 1
+        for coordinate in curr_coordinates:
+            mapping = coordiantes_dict[curr_coordinates[coordinate]]
+            if char == "L":
+                curr_coordinates[coordinate] = mapping[0:mapping.find(",")]
+            elif char == "R":
+                curr_coordinates[coordinate] = mapping[mapping.find(" ") + 1:]
+        if iteration_count % 100000000 == 0:
+            print(iteration_count)
+        for element in curr_coordinates:
+            if (curr_coordinates[element])[2] == "Z":
+                if curr_coordinates_cycles[element] == 0:
+                    curr_coordinates_cycles[element] = iteration_count
+                    print(element, curr_coordinates_cycles[element])
+    z_validation = 1
+    for element in curr_coordinates_cycles:
+        if curr_coordinates_cycles[element] == 0:
+            z_validation = 0
+
+print(curr_coordinates, iteration_count)
+print(curr_coordinates_cycles)
+    
+list_for_lcm = list(curr_coordinates_cycles.values())
+print(list_for_lcm)
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+def lcm(a, b):
+    return abs(a * b) // gcd(a, b)
+
+def multiple_lcm(args):
+    if len(args) < 2:
+        raise ValueError()
+    
+    result = args[0]
+    for num in args[1:]:
+        result = lcm(result, num)
+    
+    return result
+
+final_result = multiple_lcm(list_for_lcm)
+print(final_result)
